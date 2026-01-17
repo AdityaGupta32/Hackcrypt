@@ -11,7 +11,7 @@ const CibilScoreUI = ({ userEmail }) => {
   const fetchData = async () => {
       if(!userEmail) return;
       try {
-          const res = await axios.get(`http://localhost:5000/api/credit-health/${userEmail}`);
+          const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/credit-health/${userEmail}`);
           setData(res.data);
       } catch (err) { console.error(err); }
   };
@@ -20,7 +20,7 @@ const CibilScoreUI = ({ userEmail }) => {
 
   const handleAddLoan = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:5000/api/add-loan', { ...newLoan, userId: userEmail });
+    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/add-loan`, { ...newLoan, userId: userEmail }', { ...newLoan, userId: userEmail });
     setShowAddLoan(false);
     fetchData(); 
   };
