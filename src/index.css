@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-fintech-primary: #0b0f19;
+  --color-fintech-accent: #10B981; /* Emerald 500 */
+}
+
+@layer base {
+  /* ... your existing base styles ... */
+}
+
+/* Glassmorphism */
+.glass-panel {
+  @apply bg-white/80 dark:bg-[#111827]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-3xl shadow-xl transition-all duration-300;
+}
+
+/* 🟢 Input Field Style */
+.input-field {
+  @apply bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500 transition-colors w-full;
+}
+
+/* 🟢 Grading Animation */
+@keyframes gradient-xy {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient-xy {
+  background-size: 200% 200%;
+  animation: gradient-xy 3s ease infinite;
+}
