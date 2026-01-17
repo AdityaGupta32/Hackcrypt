@@ -18,7 +18,7 @@ const TaxCard = ({ userEmail }) => {
         if (!userEmail) return;
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:5000/api/analyze-tax', { userId: userEmail });
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/analyze-tax`, { userId: userEmail });
             setData(res.data);
         } catch (err) {
             console.error("Tax Fetch Error:", err);
