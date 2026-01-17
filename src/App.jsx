@@ -4,7 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ShieldCheck, Lock } from 'lucide-react';
 
 // Components
-import Navbar from './components/Navbar';
+import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero';       
 import Process from './components/ProcessFlow.jsx'; 
 import FileUpload from './components/FileUpload';
