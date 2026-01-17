@@ -6,7 +6,7 @@ import { ShieldCheck, Lock } from 'lucide-react';
 // Components
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';       
-import Process from './components/ProcessFlow'; 
+import Process from './components/ProcessFlow.jsx'; 
 import FileUpload from './components/FileUpload';
 import Dashboard from './components/Dashboard';
 
