@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000'; // Match your PORT 5000
+const API_BASE_URL = 'REACT_APP_BACKEND_URL'; // Match your PORT 5000
 
 // 🟢 NEW: Fetch Raw Transactions (Fast Load)
 export const fetchTransactions = async (userId) => {
