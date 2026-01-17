@@ -13,7 +13,7 @@ const SavingCard = ({ userEmail }) => {
     setLoading(true);
     try {
       // Calls your backend AI endpoint
-      const res = await axios.post('http://localhost:5000/api/analyze-savings', { userId: userEmail });
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/analyze-savings`, { userId: userEmail });
       setData(res.data);
     } catch (err) { 
       console.error("Savings Fetch Error", err); 
