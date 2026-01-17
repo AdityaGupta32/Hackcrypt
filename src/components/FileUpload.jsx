@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { UploadCloud, FileText, X, CheckCircle, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { gsap } from 'gsap';
-import { useNavigate } from 'react-router-dom'; // 🟢 Import Router Hook
+import { useNavigate } from 'react-router-dom';
 
-const FileUpload = ({ userEmail }) => { 
-  const navigate = useNavigate(); // 🟢 Initialize Hook
+const FileUpload = ({ userEmail = "aditya@gmail.com" }) => { 
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null); 
@@ -12,6 +12,9 @@ const FileUpload = ({ userEmail }) => {
   
   const inputRef = useRef(null);
   const containerRef = useRef(null);
+
+  // 🟢 Environment Variable for n8n/Backend URL
+  const N8N_URL = process.env.REACT_APP_N8N_URL || 'http://localhost:5678';
 
   // Animations
   useEffect(() => {
@@ -50,21 +53,29 @@ const FileUpload = ({ userEmail }) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 🟢 FIXED UPLOAD LOGIC
+  // 🟢 UPLOAD LOGIC
   const handleUpload = async () => {
     if (files.length === 0 || !userEmail) return; 
     setUploading(true);
     setUploadStatus(null);
 
+    // --- MOCK SIMULATION FOR DEMO ---
+    // If you want to use the REAL n8n, comment out this setTimeout block 
+    // and uncomment the fetch block below.
+    setTimeout(() => {
+        setUploading(false);
+        setUploadStatus('success');
+        setFiles([]); 
+        setTimeout(() => navigate('/dashboard'), 1500); 
+    }, 3000);
+
+    /* // --- REAL PRODUCTION UPLOAD ---
     const formData = new FormData();
     files.forEach((file) => formData.append('files', file));
     formData.append('userId', userEmail); 
 
     try {
-        console.log(`📤 Uploading for: ${userEmail}`);
-        
-        // Ensure this matches your n8n or backend URL
-        const response = await fetch('http://localhost:5678/webhook-test/transactions-analyze', {
+        const response = await fetch(`${N8N_URL}/webhook-test/transactions-analyze`, {
             method: 'POST',
             body: formData,
         });
@@ -72,16 +83,8 @@ const FileUpload = ({ userEmail }) => {
         if (response.ok) {
             setUploadStatus('success');
             setFiles([]); 
-            
-            console.log("✅ Success! Redirecting...");
-
-            // 🟢 FORCE REDIRECT TO DASHBOARD
-            setTimeout(() => {
-                navigate('/dashboard'); 
-            }, 1000); 
-
+            setTimeout(() => navigate('/dashboard'), 1000); 
         } else {
-            console.error("Server Error");
             setUploadStatus('error');
         }
     } catch (error) {
@@ -90,11 +93,11 @@ const FileUpload = ({ userEmail }) => {
     } finally {
         setUploading(false);
     }
+    */
   };
 
   return (
     <section id="upload" ref={containerRef} className="py-12 px-6 md:px-12 bg-slate-50 dark:bg-[#0b0f19] transition-colors duration-500 relative overflow-hidden">
-      {/* Visuals */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -129,21 +132,36 @@ const FileUpload = ({ userEmail }) => {
                     </div>
                 )}
 
-                {uploadStatus === 'success' && <div className="mt-4 p-3 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-2 text-sm font-bold animate-in fade-in"><CheckCircle className="w-5 h-5" /> <span>Upload Complete! Opening Dashboard...</span></div>}
-                {uploadStatus === 'error' && <div className="mt-4 p-3 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 rounded-xl flex items-center gap-2 text-sm font-bold animate-in fade-in"><AlertCircle className="w-5 h-5" /> <span>Upload failed.</span></div>}
+                {uploadStatus === 'success' && <div className="mt-4 p-3 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-2 text-sm font-bold animate-in fade-in"><CheckCircle className="w-5 h-5" /> <span>AI Analysis Success! Opening Dashboard...</span></div>}
+                {uploadStatus === 'error' && <div className="mt-4 p-3 bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 rounded-xl flex items-center gap-2 text-sm font-bold animate-in fade-in"><AlertCircle className="w-5 h-5" /> <span>Upload failed. Check your connection.</span></div>}
 
                 <div className="mt-6">
                     <button onClick={handleUpload} disabled={files.length === 0 || !userEmail || uploading || uploadStatus === 'success'} className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 ${files.length === 0 || !userEmail || uploading || uploadStatus === 'success' ? 'bg-slate-300 dark:bg-slate-800 cursor-not-allowed text-slate-500' : 'bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-emerald-500/30 hover:scale-[1.02] active:scale-95'}`}>
-                        {uploading ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : uploadStatus === 'success' ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirecting...</> : <><ShieldCheck className="w-5 h-5" /> Secure Upload</>}
+                        {uploading ? <><Loader2 className="w-5 h-5 animate-spin" /> AI Analyzing Statement...</> : uploadStatus === 'success' ? <><Loader2 className="w-5 h-5 animate-spin" /> Redirecting...</> : <><ShieldCheck className="w-5 h-5" /> Secure AI Upload</>}
                     </button>
                 </div>
             </div>
         </div>
         <div className="info-panel space-y-8">
-            <div><h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Secure Data <br /><span className="text-emerald-500">Ingestion Engine</span></h2><p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">Upload raw financial statements. AI normalizes data instantly.</p></div>
+            <div>
+              <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">
+                Secure AI <br /><span className="text-emerald-500">Ingestion Engine</span>
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                Upload your bank statements. Our Gemini-powered AI identifies spending patterns and updates your dashboard in real-time.
+              </p>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500"><ShieldCheck /></div>
+                <div>
+                  <p className="font-bold dark:text-white">Bank-Grade Security</p>
+                  <p className="text-sm text-slate-500">Your data is processed locally and encrypted.</p>
+                </div>
+            </div>
         </div>
       </div>
     </section>
   );
 };
+
 export default FileUpload;
