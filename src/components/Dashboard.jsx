@@ -3,7 +3,7 @@ import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { 
   ArrowUpCircle, ArrowDownCircle, Wallet, ShieldAlert, 
-  LayoutDashboard, BrainCircuit, Loader2, RefreshCw 
+  LayoutDashboard, BrainCircuit, Loader2
 } from 'lucide-react';
 import gsap from 'gsap'; 
 
@@ -12,7 +12,7 @@ import CibilScoreUI from './CibilScoreUI';
 import SavingCard from './SavingCard';
 import TradingBackground from './TradingBackground'; 
 
-const COLORS = ['#10B981', '#3B82F6', '#6366F1', '#8B5CF6', '#F59E0B', '#EF4444', '#14b8a6', '#f43f5e', '#8b5cf6', '#ec4899']; // Added more colors for variety
+const COLORS = ['#10B981', '#3B82F6', '#6366F1', '#8B5CF6', '#F59E0B', '#EF4444', '#14b8a6', '#f43f5e', '#8b5cf6', '#ec4899'];
 const HIGH_VALUE_THRESHOLD = 5000;
 const SUSPICIOUS_KEYWORDS = ['bet', 'casino', 'crypto', 'dream11', 'unknown', 'cash', 'loan'];
 
@@ -34,10 +34,13 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
   const [loading, setLoading] = useState(true);
   const containerRef = useRef(null);
 
+  // 🟢 FIX: Dynamic Backend URL for Deployment
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/transactions/${userEmail}`);
+        const response = await axios.get(`${BACKEND_URL}/api/transactions/${userEmail}`);
         setTransactions(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -46,7 +49,7 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
       }
     };
     if (userEmail) fetchData();
-  }, [userEmail]);
+  }, [userEmail, BACKEND_URL]);
 
   useEffect(() => {
     if (loading) return;
@@ -84,7 +87,12 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
     return { income, expense, balance: income - expense, chartData, fraudList };
   }, [transactions]);
 
-  if (loading) return <div className="min-h-screen bg-[#0b0f19] flex flex-col items-center justify-center text-white space-y-4"><Loader2 className="w-12 h-12 text-emerald-500 animate-spin" /><p className="text-lg font-mono text-emerald-400">Syncing...</p></div>;
+  if (loading) return (
+    <div className="min-h-screen bg-[#0b0f19] flex flex-col items-center justify-center text-white space-y-4">
+      <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+      <p className="text-lg font-mono text-emerald-400">Syncing Production Data...</p>
+    </div>
+  );
 
   return (
     <div ref={containerRef} className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-white p-6 md:p-12 font-sans relative overflow-hidden">
@@ -118,12 +126,12 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
                         {transactions.length > 0 ? (
                             transactions.map((t, i) => <TransactionItem key={i} t={t} />)
                         ) : (
-                            <div className="h-full flex items-center justify-center text-gray-500">No transactions found.</div>
+                            <div className="h-full flex items-center justify-center text-gray-500 italic">No historical data found.</div>
                         )}
                     </div>
                 </div>
 
-                {/* Spending Chart with Fixed Legends */}
+                {/* Spending Chart with Legend Fix */}
                 <div className="gsap-card glass-panel p-6 h-[500px] flex flex-col bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
                     <h3 className="text-xl font-bold mb-2 text-slate-800 dark:text-white">Spending Mix</h3>
                     <div className="flex-1">
@@ -132,8 +140,8 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
                                 <PieChart>
                                     <Pie 
                                         data={summary.chartData} 
-                                        cx="50%" // Center X
-                                        cy="40%" // 🟢 MOVED UP (was 50%) to make room for legend
+                                        cx="50%" 
+                                        cy="40%" // 🟢 Shifted up to prevent legend overlap
                                         innerRadius={60} 
                                         outerRadius={80} 
                                         dataKey="value" 
@@ -144,28 +152,28 @@ const Dashboard = ({ userEmail = "aditya@gmail.com" }) => {
                                         ))}
                                     </Pie>
                                     
-                                    {/* White Tooltip */}
+                                    {/* 🟢 White Tooltip Fix */}
                                     <Tooltip 
-                                        contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', color: '#000', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
+                                        contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', color: '#000', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
                                         itemStyle={{ color: '#000' }} 
                                     />
                                     
-                                    {/* 🟢 FIXED LEGEND: More height, smaller font, pushed to bottom */}
+                                    {/* 🟢 Legend Font & Layout Fix */}
                                     <Legend 
                                         verticalAlign="bottom" 
-                                        height={100} // Allocated more height for wrapping
+                                        height={100} 
                                         iconType="circle" 
                                         align="center"
                                         wrapperStyle={{ 
-                                            fontSize: '11px', // Smaller font to fit items
-                                            overflowY: 'auto', // Scroll if too many items
-                                            paddingTop: '10px'
+                                            fontSize: '11px', 
+                                            paddingTop: '20px',
+                                            color: '#94a3b8' 
                                         }}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="h-full flex items-center justify-center text-gray-500">No chart data.</div>
+                            <div className="h-full flex items-center justify-center text-gray-500 italic">Upload a statement to see the mix.</div>
                         )}
                     </div>
                 </div>
@@ -190,6 +198,7 @@ const TabButton = ({ icon: Icon, label, active, onClick }) => (
     <Icon className="w-4 h-4" /> {label}
   </button>
 );
+
 const SummaryCard = ({ title, amount, icon: Icon, color, isExpense }) => (
   <div className="gsap-card p-6 flex flex-col justify-between h-32 relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group hover:border-emerald-500/30 transition-colors">
     <div className={`absolute right-4 top-4 p-2 rounded-full bg-current opacity-10 ${color}`}><Icon className="w-6 h-6" /></div>
@@ -197,6 +206,7 @@ const SummaryCard = ({ title, amount, icon: Icon, color, isExpense }) => (
     <span className={`text-3xl font-bold ${color}`}>{isExpense && amount > 0 ? '-' : ''}{Number(amount || 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
   </div>
 );
+
 const RiskCard = ({ count }) => (
   <div className="gsap-card p-6 border-l-4 border-amber-500 flex flex-col justify-between h-32 rounded-2xl bg-white/5 border-t border-r border-b border-white/10 backdrop-blur-md">
     <div className="flex justify-between items-start">
@@ -205,6 +215,7 @@ const RiskCard = ({ count }) => (
     </div>
   </div>
 );
+
 const TransactionItem = ({ t }) => (
   <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
     <div className="flex items-center gap-4">
