@@ -30,7 +30,7 @@ const Navbar = ({ user, setUser }) => {
       setUser(userData);
       
       // Sync user with Backend (MongoDB)
-      await axios.post('http://localhost:5000/api/auth/google', userData);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/google`, userData);
       
     } catch (error) {
       console.error("Login Failed", error);
