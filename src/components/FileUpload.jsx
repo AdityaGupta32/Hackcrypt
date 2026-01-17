@@ -64,10 +64,10 @@ const FileUpload = ({ userEmail }) => {
         console.log(`📤 Uploading for: ${userEmail}`);
         
         // Ensure this matches your n8n or backend URL
-        const response = await fetch(`${process.env.REACT_APP_N8N_URL}/webhook-test/transactions-analyze`, {
-    method: 'POST',
-    body: formData,
-});
+        const response = await fetch('http://localhost:5678/webhook-test/transactions-analyze', {
+            method: 'POST',
+            body: formData,
+        });
 
         if (response.ok) {
             setUploadStatus('success');
